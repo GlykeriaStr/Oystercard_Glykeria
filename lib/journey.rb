@@ -3,8 +3,6 @@ require_relative 'station'
 
 class Journey
 
-  attr_reader :journeys
-
   DEFAULT_MINIMUM = 1
   PENALTY_FARE = 6
 
