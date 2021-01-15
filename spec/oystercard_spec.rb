@@ -4,10 +4,13 @@ require 'journey'
 describe Oystercard do
   let(:station){ double :station }
   let(:exit_station){double :exit_station}
-  let(:journey){ [{entry_station: station, exit_station: exit_station}] }
+  let(:journey) { { entry_station: station, exit_station: exit_station } }
+  let(:journey_class_double) { double :journey_class }
 
-  it 'starts with a balance of 0' do
-    expect(subject.balance).to eq 0
+  describe '#balance' do
+    it 'starts with a balance of 0' do
+      expect(subject.balance).to eq 0
+    end
   end
 
   describe '#top up' do
@@ -37,6 +40,12 @@ describe Oystercard do
     it 'starts off not in journey' do
       expect(subject).not_to be_in_journey
     end
+
+    it 'should check if card is in_journey' do
+      subject.top_up(10)
+      subject.touch_in(station)
+      expect(subject.in_journey?).to eq true
+    end
   end
 
   describe '#touch_in' do
@@ -61,19 +70,11 @@ describe Oystercard do
       expect(subject).not_to be_in_journey
     end
 
-    it 'will deduct the cost of the journey' do
-      subject.top_up(10)
-      subject.touch_in(station)
-      expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by (-Journey.new.fare)
-    end
-  end
-
-  describe '#entry_station' do
-    it 'stores the entry station' do
-      subject.top_up(10)
-      subject.touch_in(station)
-      expect(subject.entry_station).to eq station
-    end
+  #   it 'will deduct the cost of the journey' do
+  #     subject.top_up(10)
+  #     subject.touch_in(station)
+  #     expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by (-Journey.new.fare)
+  #   end
   end
 
   describe '#journeys' do
@@ -81,11 +82,9 @@ describe Oystercard do
       expect(subject.journeys).to eq []
     end
 
-    it 'expects a journey to be stored' do
-      subject.top_up(10)
-      subject.touch_in(station)
-      subject.touch_out(exit_station)
-      expect(subject.journeys).to eq journey
+    it 'will return the station in the journey' do
+      subject.journeys << journey_class_double
+      expect(subject.journeys).to include journey_class_double
     end
   end
 end
